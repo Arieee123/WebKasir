@@ -178,7 +178,7 @@
 
   <script>
     // Inisialisasi variabel
-    let keranjang = {}; // Inisialisasi keranjang sebagai objek kosong
+    let keranjang = {};
     let historiTransaksi = [];
     let totalHistoriHariIni = 0;
     let lastResetDate = new Date().toLocaleDateString();
@@ -186,191 +186,221 @@
 
     // Fungsi untuk menampilkan item
     function tampilkanItem() {
-      const itemsContainer = document.getElementById('items_container');
-      itemsContainer.innerHTML = "";
+        const itemsContainer = document.getElementById('items_container');
+        itemsContainer.innerHTML = "";
 
-      // Urutkan item berdasarkan frekuensi (dari yang tertinggi ke terendah)
-      const sortedItems = Object.keys(keranjang).sort((a, b) => keranjang[b].frekuensi - keranjang[a].frekuensi);
+        // Urutkan item berdasarkan frekuensi (dari yang tertinggi ke terendah)
+        const sortedItems = Object.keys(keranjang).sort((a, b) => keranjang[b].frekuensi - keranjang[a].frekuensi);
 
-      sortedItems.forEach(item => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'item';
-        itemDiv.setAttribute('onclick', `tambahItem('${item}')`);
-        itemDiv.innerHTML = `<span>${keranjang[item].nama} - Rp ${keranjang[item].harga}</span><input type="number" id="${item}_qty" value="0" min="0" onchange="updateJumlah('${item}')">`;
-        itemsContainer.appendChild(itemDiv);
-      });
+        sortedItems.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item';
+            itemDiv.setAttribute('onclick', `tambahItem('${item}')`);
+            itemDiv.innerHTML = `<span>${keranjang[item].nama} - Rp ${keranjang[item].harga}</span><input type="number" id="${item}_qty" value="0" min="0" onchange="updateJumlah('${item}')">`;
+            itemsContainer.appendChild(itemDiv);
+        });
     }
 
     // Fungsi untuk menambah jumlah item
     function tambahItem(item) {
-      if (!keranjang[item]) {
-        alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
-        return;
-      }
+        if (!keranjang[item]) {
+            alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
+            return;
+        }
 
-      keranjang[item].jumlah += 1;
-      document.getElementById(`${item}_qty`).value = keranjang[item].jumlah;
-      hitungTotal();
+        keranjang[item].jumlah += 1;
+        document.getElementById(`${item}_qty`).value = keranjang[item].jumlah;
+        hitungTotal();
     }
 
     // Fungsi untuk mengupdate jumlah item secara manual
     function updateJumlah(item) {
-      if (!keranjang[item]) {
-        alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
-        return;
-      }
+        if (!keranjang[item]) {
+            alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
+            return;
+        }
 
-      const qtyInput = document.getElementById(`${item}_qty`);
-      keranjang[item].jumlah = parseInt(qtyInput.value);
-      hitungTotal();
+        const qtyInput = document.getElementById(`${item}_qty`);
+        keranjang[item].jumlah = parseInt(qtyInput.value);
+        hitungTotal();
     }
 
     // Fungsi untuk menghitung total harga
     function hitungTotal() {
-      let totalHarga = 0;
-      for (let item in keranjang) {
-        if (keranjang[item].harga === undefined) {
-          alert(`TERJADI KESALAHAN: Harga untuk ${keranjang[item].nama} tidak terdefinisi!`);
-          return;
+        let totalHarga = 0;
+        for (let item in keranjang) {
+            if (keranjang[item].harga === undefined) {
+                alert(`TERJADI KESALAHAN: Harga untuk ${keranjang[item].nama} tidak terdefinisi!`);
+                return;
+            }
+            totalHarga += keranjang[item].jumlah * keranjang[item].harga;
         }
-        totalHarga += keranjang[item].jumlah * keranjang[item].harga;
-      }
 
-      document.getElementById('total_harga').innerText = totalHarga;
-      hitungKembalian();
+        document.getElementById('total_harga').innerText = totalHarga;
+        hitungKembalian();
     }
 
     // Fungsi untuk menghitung kembalian
     function hitungKembalian() {
-      const totalHarga = parseInt(document.getElementById('total_harga').innerText);
-      const uangDiberikan = parseInt(document.getElementById('uang_diberikan').value);
+        const totalHarga = parseInt(document.getElementById('total_harga').innerText);
+        const uangDiberikan = parseInt(document.getElementById('uang_diberikan').value);
 
-      if (uangDiberikan >= totalHarga) {
-        const kembalian = uangDiberikan - totalHarga;
-        document.getElementById('kembalian_harga').innerText = kembalian;
-      } else {
-        document.getElementById('kembalian_harga').innerText = "Uang tidak cukup";
-      }
+        if (uangDiberikan >= totalHarga) {
+            const kembalian = uangDiberikan - totalHarga;
+            document.getElementById('kembalian_harga').innerText = kembalian;
+        } else {
+            document.getElementById('kembalian_harga').innerText = "Uang tidak cukup";
+        }
     }
 
     // Fungsi untuk menyimpan transaksi ke histori
     function simpanTransaksi() {
-      const totalHarga = parseInt(document.getElementById('total_harga').innerText);
-      const uangDiberikan = parseInt(document.getElementById('uang_diberikan').value);
-      const namaShift = document.getElementById('nama_shift').value;
+        const totalHarga = parseInt(document.getElementById('total_harga').innerText);
+        const uangDiberikan = parseInt(document.getElementById('uang_diberikan').value);
+        const namaShift = document.getElementById('nama_shift').value;
 
-      if (uangDiberikan < totalHarga) {
-        alert("TERJADI KESALAHAN: Uang tidak cukup!");
-        return;
-      }
-
-      if (!namaShift) {
-        alert("TERJADI KESALAHAN: Masukkan nama shift!");
-        return;
-      }
-
-      // Cek apakah tanggal sudah berubah
-      const currentDate = new Date().toLocaleDateString();
-      if (currentDate !== lastResetDate) {
-        resetHistori();
-        lastResetDate = currentDate;
-      }
-
-      // Simpan detail transaksi
-      const detailTransaksi = [];
-      for (let item in keranjang) {
-        if (keranjang[item].jumlah > 0) {
-          if (keranjang[item].harga === undefined) {
-            alert(`TERJADI KESALAHAN: Harga untuk ${keranjang[item].nama} tidak terdefinisi!`);
+        if (uangDiberikan < totalHarga) {
+            alert("TERJADI KESALAHAN: Uang tidak cukup!");
             return;
-          }
-          detailTransaksi.push({ nama: keranjang[item].nama, jumlah: keranjang[item].jumlah, total: keranjang[item].jumlah * keranjang[item].harga });
-
-          // Update frekuensi pembelian item
-          keranjang[item].frekuensi += keranjang[item].jumlah;
         }
-      }
 
-      // Simpan transaksi ke histori
-      historiTransaksi.push({ totalHarga, detailTransaksi, namaShift });
-      totalHistoriHariIni += totalHarga;
+        if (!namaShift) {
+            alert("TERJADI KESALAHAN: Masukkan nama shift!");
+            return;
+        }
 
-      // Update total per shift
-      if (!shiftTotals[namaShift]) {
-        shiftTotals[namaShift] = 0;
-      }
-      shiftTotals[namaShift] += totalHarga;
+        // Cek apakah tanggal sudah berubah
+        const currentDate = new Date().toLocaleDateString();
+        if (currentDate !== lastResetDate) {
+            resetHistori();
+            lastResetDate = currentDate;
+        }
 
-      // Update tampilan histori
-      updateHistori();
+        // Simpan detail transaksi
+        const detailTransaksi = [];
+        for (let item in keranjang) {
+            if (keranjang[item].jumlah > 0) {
+                if (keranjang[item].harga === undefined) {
+                    alert(`TERJADI KESALAHAN: Harga untuk ${keranjang[item].nama} tidak terdefinisi!`);
+                    return;
+                }
+                detailTransaksi.push({ nama: keranjang[item].nama, jumlah: keranjang[item].jumlah, total: keranjang[item].jumlah * keranjang[item].harga });
 
-      // Reset keranjang dan input setelah transaksi
-      for (let item in keranjang) {
-        keranjang[item].jumlah = 0;
-        document.getElementById(`${item}_qty`).value = 0;
-      }
+                // Update frekuensi pembelian item
+                keranjang[item].frekuensi += keranjang[item].jumlah;
+            }
+        }
 
-      document.getElementById('uang_diberikan').value = 0;
-      document.getElementById('total_harga').innerText = 0;
-      document.getElementById('kembalian_harga').innerText = 0;
+        // Simpan transaksi ke histori
+        historiTransaksi.push({ totalHarga, detailTransaksi, namaShift });
+        totalHistoriHariIni += totalHarga;
 
-      // Tampilkan ulang item setelah frekuensi diupdate
-      tampilkanItem();
+        // Update total per shift
+        if (!shiftTotals[namaShift]) {
+            shiftTotals[namaShift] = 0;
+        }
+        shiftTotals[namaShift] += totalHarga;
 
-      // Simpan keranjang ke localStorage
-      saveKeranjangToLocalStorage();
+        // Update tampilan histori
+        updateHistori();
+
+        // Reset keranjang dan input setelah transaksi
+        for (let item in keranjang) {
+            keranjang[item].jumlah = 0;
+            document.getElementById(`${item}_qty`).value = 0;
+        }
+
+        document.getElementById('uang_diberikan').value = 0;
+        document.getElementById('total_harga').innerText = 0;
+        document.getElementById('kembalian_harga').innerText = 0;
+
+        // Tampilkan ulang item setelah frekuensi diupdate
+        tampilkanItem();
+
+        // Simpan keranjang ke localStorage
+        saveKeranjangToLocalStorage();
     }
 
     // Fungsi untuk mengupdate tampilan histori
     function updateHistori() {
-      const historiList = document.getElementById('histori_list');
-      const totalShiftList = document.getElementById('total_shift_list');
+        const historiList = document.getElementById('histori_list');
+        const totalShiftList = document.getElementById('total_shift_list');
 
-      historiList.innerHTML = "";
-      totalShiftList.innerHTML = "";
+        historiList.innerHTML = "";
+        totalShiftList.innerHTML = "";
 
-      historiTransaksi.forEach((transaksi, index) => {
-        const li = document.createElement('li');
-        let detail = `Transaksi ${index + 1}:<br>`;
-        transaksi.detailTransaksi.forEach(item => {
-          detail += `${item.nama} (${item.jumlah})<br>`;
+        historiTransaksi.forEach((transaksi, index) => {
+            const li = document.createElement('li');
+            let detail = `Transaksi ${index + 1}:<br>`;
+            transaksi.detailTransaksi.forEach(item => {
+                detail += `${item.nama} (${item.jumlah})<br>`;
+            });
+            detail += `Total: Rp ${transaksi.totalHarga}`;
+            li.innerHTML = detail;
+            historiList.appendChild(li);
         });
-        detail += `Total: Rp ${transaksi.totalHarga}`;
-        li.innerHTML = detail;
-        historiList.appendChild(li);
-      });
 
-      for (let shift in shiftTotals) {
-        const li = document.createElement('li');
-        li.innerText = `Shift ${shift}: Rp ${shiftTotals[shift]}`;
-        totalShiftList.appendChild(li);
-      }
+        for (let shift in shiftTotals) {
+            const li = document.createElement('li');
+            li.innerText = `Shift ${shift}: Rp ${shiftTotals[shift]}`;
+            totalShiftList.appendChild(li);
+        }
 
-      document.getElementById('total_histori').innerText = totalHistoriHariIni;
+        document.getElementById('total_histori').innerText = totalHistoriHariIni;
     }
 
     // Fungsi untuk mereset histori saat pergantian tanggal
     function resetHistori() {
-      historiTransaksi = [];
-      totalHistoriHariIni = 0;
-      shiftTotals = {};
-      updateHistori();
+        historiTransaksi = [];
+        totalHistoriHariIni = 0;
+        shiftTotals = {};
+        updateHistori();
     }
 
     // Fungsi untuk menambah barang baru
     function tambahBarang() {
-      try {
-        const namaBarang = document.getElementById('nama_barang').value.trim();
-        const hargaBarang = parseInt(document.getElementById('harga_barang').value);
+        try {
+            const namaBarang = document.getElementById('nama_barang').value.trim();
+            const hargaBarangInput = document.getElementById('harga_barang').value;
 
-        if (!namaBarang || isNaN(hargaBarang)) {
-          throw new Error("Masukkan nama dan harga barang yang valid!");
+            if (!namaBarang || !hargaBarangInput) {
+                throw new Error("Masukkan nama dan harga barang yang valid!");
+            }
+
+            const hargaBarang = parseInt(hargaBarangInput); // Pastikan ini diparse sebelum validasi
+            if (isNaN(hargaBarang)) {
+                throw new Error("Harga barang harus berupa angka!");
+            }
+
+
+            const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
+            keranjang[idBarang] = { nama: namaBarang, harga: hargaBarang, jumlah: 0, frekuensi: 0 };
+
+            // Tampilkan item setelah ditambahkan
+            tampilkanItem();
+            document.getElementById('nama_barang').value = "";
+            document.getElementById('harga_barang').value = "";
+            tutupModalKelolaBarang();
+
+            // Simpan keranjang ke localStorage
+            saveKeranjangToLocalStorage();
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    // Fungsi untuk menghapus barang
+    function hapusBarang() {
+        const namaBarang = document.getElementById('nama_barang').value;
+        const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
+
+        if (!keranjang || !keranjang[idBarang]) {
+            alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
+            return;
         }
 
-        const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
-        keranjang[idBarang] = { nama: namaBarang, harga: hargaBarang, jumlah: 0, frekuensi: 0 };
+        delete keranjang[idBarang];
 
-        // Tampilkan item setelah ditambahkan
         tampilkanItem();
         document.getElementById('nama_barang').value = "";
         document.getElementById('harga_barang').value = "";
@@ -378,89 +408,75 @@
 
         // Simpan keranjang ke localStorage
         saveKeranjangToLocalStorage();
-      } catch (error) {
-        alert(error.message);
-      }
-    }
-
-    // Fungsi untuk menghapus barang
-    function hapusBarang() {
-      const namaBarang = document.getElementById('nama_barang').value;
-      const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
-
-      if (!keranjang || !keranjang[idBarang]) {
-        alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
-        return;
-      }
-
-      delete keranjang[idBarang];
-
-      tampilkanItem();
-      document.getElementById('nama_barang').value = "";
-      document.getElementById('harga_barang').value = "";
-      tutupModalKelolaBarang();
-
-      // Simpan keranjang ke localStorage
-      saveKeranjangToLocalStorage();
     }
 
     // Fungsi untuk mengubah barang
     function ubahBarang() {
-      const namaBarang = document.getElementById('nama_barang').value;
-      const hargaBarang = parseInt(document.getElementById('harga_barang').value);
-      const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
+        const namaBarang = document.getElementById('nama_barang').value;
+        const hargaBarang = parseInt(document.getElementById('harga_barang').value);
+        const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
 
-      if (!keranjang || !keranjang[idBarang]) {
-        alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
-        return;
-      }
+        if (!keranjang || !keranjang[idBarang]) {
+            alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
+            return;
+        }
 
-      keranjang[idBarang].harga = hargaBarang;
+        keranjang[idBarang].harga = hargaBarang;
 
-      tampilkanItem();
-      document.getElementById('nama_barang').value = "";
-      document.getElementById('harga_barang').value = "";
-      tutupModalKelolaBarang();
+        tampilkanItem();
+        document.getElementById('nama_barang').value = "";
+        document.getElementById('harga_barang').value = "";
+        tutupModalKelolaBarang();
 
-      // Simpan keranjang ke localStorage
-      saveKeranjangToLocalStorage();
+        // Simpan keranjang ke localStorage
+        saveKeranjangToLocalStorage();
     }
 
     // Fungsi untuk membuka modal kelola barang
     function bukaModalKelolaBarang() {
-      document.getElementById('modalKelolaBarang').style.display = 'block';
+        document.getElementById('modalKelolaBarang').style.display = 'block';
     }
 
     // Fungsi untuk menutup modal kelola barang
     function tutupModalKelolaBarang() {
-      document.getElementById('modalKelolaBarang').style.display = 'none';
+        document.getElementById('modalKelolaBarang').style.display = 'none';
     }
 
     // Fungsi untuk membuka modal histori transaksi
     function bukaModalHistori() {
-      updateHistori(); // Perbarui histori sebelum menampilkan modal
-      document.getElementById('modalHistoriTransaksi').style.display = 'block';
+        updateHistori(); // Perbarui histori sebelum menampilkan modal
+        document.getElementById('modalHistoriTransaksi').style.display = 'block';
     }
 
     // Fungsi untuk menutup modal histori transaksi
     function tutupModalHistori() {
-      document.getElementById('modalHistoriTransaksi').style.display = 'none';
+        document.getElementById('modalHistoriTransaksi').style.display = 'none';
     }
 
     // Fungsi untuk menyimpan keranjang ke localStorage
     function saveKeranjangToLocalStorage() {
-      localStorage.setItem("keranjang", JSON.stringify(keranjang));
+        try {
+            localStorage.setItem("keranjang", JSON.stringify(keranjang));
+        } catch (e) {
+            console.error("Tidak dapat menyimpan ke localStorage:", e);
+            alert("Peringatan: Tidak dapat menyimpan data ke localStorage. Data mungkin hilang saat browser ditutup.");
+        }
     }
 
     // Fungsi untuk memuat keranjang dari localStorage
     function loadKeranjangFromLocalStorage() {
-      const savedKeranjang = localStorage.getItem("keranjang");
-      if (savedKeranjang) {
-        return JSON.parse(savedKeranjang);
-      } else {
-        // Inisialisasi keranjang jika belum ada data
-        return {};
-      }
+        try {
+            const savedKeranjang = localStorage.getItem("keranjang");
+            if (savedKeranjang) {
+                return JSON.parse(savedKeranjang);
+            } else {
+                // Inisialisasi keranjang jika belum ada data
+                return {};
+            }
+        } catch (e) {
+            console.error("Tidak dapat memuat dari localStorage:", e);
+            return {}; // Berikan nilai default jika terjadi kesalahan
+        }
     }
 
     // Inisialisasi keranjang dari localStorage saat pertama kali memuat halaman
