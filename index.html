@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasir Sederhana</title>
+    <title>Kasir</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -124,14 +124,28 @@
             text-decoration: none;
             cursor: pointer;
         }
+        #modalHistoriTransaksi .modal-content {
+            max-width: 600px;
+        }
+        #modalHistoriTransaksi ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #modalHistoriTransaksi ul li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Kasir Sederhana</h1>
+    <h1>Kasir UMKM</h1>
 
     <div>
-        <label for="nama_shift">Nama Shift:</label>
+        <label for="nama_shift">Nama Kasir:</label>
         <input type="text" id="nama_shift" placeholder="Masukkan nama shift">
     </div>
 
@@ -153,26 +167,31 @@
     </div>
 
     <button onclick="simpanTransaksi()">Simpan Transaksi</button>
-    <button onclick="bukaModal()">Kelola Barang</button>
-
-    <div id="histori">
-        <h2>Histori Transaksi</h2>
-        <ul id="histori_list"></ul>
-        <p>Total Hari Ini: Rp <span id="total_histori">0</span></p>
-        <p>Total per Shift:</p>
-        <ul id="total_shift_list"></ul>
-    </div>
+    <button onclick="bukaModalKelolaBarang()">Kelola Barang</button>
+    <button onclick="bukaModalHistori()">Lihat Histori Transaksi</button>
 
     <!-- Modal Kelola Barang -->
     <div id="modalKelolaBarang" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="tutupModal()">&times;</span>
+            <span class="close" onclick="tutupModalKelolaBarang()">&times;</span>
             <h2>Kelola Barang</h2>
             <input type="text" id="nama_barang" placeholder="Nama Barang">
             <input type="number" id="harga_barang" placeholder="Harga Barang">
             <button onclick="tambahBarang()">Tambah Barang</button>
             <button onclick="hapusBarang()">Hapus Barang</button>
             <button onclick="ubahBarang()">Ubah Barang</button>
+        </div>
+    </div>
+
+    <!-- Modal Histori Transaksi -->
+    <div id="modalHistoriTransaksi" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="tutupModalHistori()">&times;</span>
+            <h2>Histori Transaksi</h2>
+            <ul id="histori_list"></ul>
+            <p>Total Hari Ini: Rp <span id="total_histori">0</span></p>
+            <p>Total per Shift:</p>
+            <ul id="total_shift_list"></ul>
         </div>
     </div>
 
@@ -219,6 +238,10 @@
 
         // Fungsi untuk menambah jumlah item
         function tambahItem(item) {
+            if (!keranjang[item]) {
+                alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
+                return;
+            }
             keranjang[item].jumlah += 1;
             document.getElementById(`${item}_qty`).value = keranjang[item].jumlah;
             hitungTotal();
@@ -226,6 +249,10 @@
 
         // Fungsi untuk mengupdate jumlah item secara manual
         function updateJumlah(item) {
+            if (!keranjang[item]) {
+                alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
+                return;
+            }
             const qtyInput = document.getElementById(`${item}_qty`);
             keranjang[item].jumlah = parseInt(qtyInput.value);
             hitungTotal();
@@ -235,6 +262,10 @@
         function hitungTotal() {
             let totalHarga = 0;
             for (let item in keranjang) {
+                if (keranjang[item].harga === undefined) {
+                    alert(`TERJADI KESALAHAN: Harga untuk ${keranjang[item].nama} tidak terdefinisi!`);
+                    return;
+                }
                 totalHarga += keranjang[item].jumlah * keranjang[item].harga;
             }
             document.getElementById('total_harga').innerText = totalHarga;
@@ -261,12 +292,12 @@
             const namaShift = document.getElementById('nama_shift').value;
 
             if (uangDiberikan < totalHarga) {
-                alert("Uang tidak cukup!");
+                alert("TERJADI KESALAHAN: Uang tidak cukup!");
                 return;
             }
 
             if (!namaShift) {
-                alert("Masukkan nama shift!");
+                alert("TERJADI KESALAHAN: Masukkan nama shift!");
                 return;
             }
 
@@ -281,6 +312,10 @@
             const detailTransaksi = [];
             for (let item in keranjang) {
                 if (keranjang[item].jumlah > 0) {
+                    if (keranjang[item].harga === undefined) {
+                        alert(`TERJADI KESALAHAN: Harga untuk ${keranjang[item].nama} tidak terdefinisi!`);
+                        return;
+                    }
                     detailTransaksi.push({
                         nama: keranjang[item].nama,
                         jumlah: keranjang[item].jumlah,
@@ -327,12 +362,12 @@
 
             historiTransaksi.forEach((transaksi, index) => {
                 const li = document.createElement('li');
-                let detail = `Shift: ${transaksi.namaShift}, Transaksi ${index + 1}: `;
+                let detail = `Transaksi ${index + 1}:<br>`;
                 transaksi.detailTransaksi.forEach(item => {
-                    detail += `${item.nama} (${item.jumlah} x Rp ${item.harga}) = Rp ${item.total}, `;
+                    detail += `${item.nama} (${item.jumlah})<br>`;
                 });
                 detail += `Total: Rp ${transaksi.totalHarga}`;
-                li.innerText = detail;
+                li.innerHTML = detail;
                 historiList.appendChild(li);
             });
 
@@ -359,7 +394,7 @@
             const hargaBarang = parseInt(document.getElementById('harga_barang').value);
 
             if (!namaBarang || isNaN(hargaBarang)) {
-                alert("Masukkan nama dan harga barang yang valid!");
+                alert("TERJADI KESALAHAN: Masukkan nama dan harga barang yang valid!");
                 return;
             }
 
@@ -370,7 +405,7 @@
             tampilkanItem();
             document.getElementById('nama_barang').value = "";
             document.getElementById('harga_barang').value = "";
-            tutupModal();
+            tutupModalKelolaBarang();
         }
 
         // Fungsi untuk menghapus barang
@@ -379,7 +414,7 @@
             const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
 
             if (!keranjang[idBarang]) {
-                alert("Barang tidak ditemukan!");
+                alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
                 return;
             }
 
@@ -389,7 +424,7 @@
             tampilkanItem();
             document.getElementById('nama_barang').value = "";
             document.getElementById('harga_barang').value = "";
-            tutupModal();
+            tutupModalKelolaBarang();
         }
 
         // Fungsi untuk mengubah barang
@@ -399,7 +434,7 @@
             const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
 
             if (!keranjang[idBarang]) {
-                alert("Barang tidak ditemukan!");
+                alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
                 return;
             }
 
@@ -409,17 +444,28 @@
             tampilkanItem();
             document.getElementById('nama_barang').value = "";
             document.getElementById('harga_barang').value = "";
-            tutupModal();
+            tutupModalKelolaBarang();
         }
 
-        // Fungsi untuk membuka modal
-        function bukaModal() {
+        // Fungsi untuk membuka modal kelola barang
+        function bukaModalKelolaBarang() {
             document.getElementById('modalKelolaBarang').style.display = 'block';
         }
 
-        // Fungsi untuk menutup modal
-        function tutupModal() {
+        // Fungsi untuk menutup modal kelola barang
+        function tutupModalKelolaBarang() {
             document.getElementById('modalKelolaBarang').style.display = 'none';
+        }
+
+        // Fungsi untuk membuka modal histori transaksi
+        function bukaModalHistori() {
+            updateHistori(); // Perbarui histori sebelum menampilkan modal
+            document.getElementById('modalHistoriTransaksi').style.display = 'block';
+        }
+
+        // Fungsi untuk menutup modal histori transaksi
+        function tutupModalHistori() {
+            document.getElementById('modalHistoriTransaksi').style.display = 'none';
         }
 
         // Tampilkan item saat pertama kali memuat halaman
