@@ -178,7 +178,7 @@
 
   <script>
     // Inisialisasi variabel
-    let keranjang = loadKeranjangFromLocalStorage();
+    let keranjang = {}; // Inisialisasi keranjang sebagai objek kosong
     let historiTransaksi = [];
     let totalHistoriHariIni = 0;
     let lastResetDate = new Date().toLocaleDateString();
@@ -367,10 +367,6 @@
           throw new Error("Masukkan nama dan harga barang yang valid!");
         }
 
-        if (!keranjang) {
-          keranjang = {}; // Inisialisasi keranjang jika belum ada
-        }
-
         const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
         keranjang[idBarang] = { nama: namaBarang, harga: hargaBarang, jumlah: 0, frekuensi: 0 };
 
@@ -466,6 +462,9 @@
         return {};
       }
     }
+
+    // Inisialisasi keranjang dari localStorage saat pertama kali memuat halaman
+    keranjang = loadKeranjangFromLocalStorage();
 
     // Tampilkan item saat pertama kali memuat halaman
     tampilkanItem();
