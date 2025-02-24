@@ -1,476 +1,483 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasir</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            color: #4CAF50;
-        }
-        .item {
-            background-color: #fff;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .item:hover {
-            background-color: #f0f0f0;
-        }
-        .item span {
-            font-weight: bold;
-        }
-        .item input {
-            width: 50px;
-            margin-left: 10px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
-        }
-        #total, #kembalian {
-            margin-top: 20px;
-            font-size: 1.5em;
-            font-weight: bold;
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        #uang_diberikan {
-            margin-top: 10px;
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #histori {
-            margin-top: 30px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        #histori ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        #histori ul li {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-            border: 1px solid #eee;
-        }
-        #histori ul li span {
-            font-weight: bold;
-            color: #4CAF50;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding-top: 60px;
-        }
-        .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 500px;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        #modalHistoriTransaksi .modal-content {
-            max-width: 600px;
-        }
-        #modalHistoriTransaksi ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        #modalHistoriTransaksi ul li {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-            border: 1px solid #eee;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kasir Sederhana</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #4CAF50;
+    }
+
+    #items_container {
+      display: flex;
+      flex-direction: column; /* Item sejajar ke bawah */
+      gap: 10px; /* Jarak antar item */
+    }
+
+    .item {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .item:hover {
+      background-color: #f0f0f0;
+    }
+
+    .item span {
+      font-weight: bold;
+    }
+
+    .item input {
+      width: 60px;
+      margin-left: 10px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    #total, #kembalian {
+      margin-top: 20px;
+      font-size: 1.5em;
+      font-weight: bold;
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    #uang_diberikan {
+      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 500px;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
+  <h1>Kasir Sederhana</h1>
 
-    <h1>Kasir UMKM</h1>
+  <div>
+    <label for="nama_shift">Nama Shift:</label>
+    <input type="text" id="nama_shift" placeholder="Masukkan nama shift">
+  </div>
 
-    <div>
-        <label for="nama_shift">Nama Kasir:</label>
-        <input type="text" id="nama_shift" placeholder="Masukkan nama shift">
+  <div id="items_container">
+    <!-- Item akan ditambahkan secara dinamis di sini -->
+  </div>
+
+  <div id="total">
+    Total: Rp <span id="total_harga">0</span>
+  </div>
+
+  <div>
+    <label for="uang_diberikan">Uang Diberikan:</label>
+    <input type="number" id="uang_diberikan" min="0" onchange="hitungKembalian()">
+  </div>
+
+  <div id="kembalian">
+    Kembalian: Rp <span id="kembalian_harga">0</span>
+  </div>
+
+  <button onclick="simpanTransaksi()">Simpan Transaksi</button>
+  <button onclick="bukaModalKelolaBarang()">Kelola Barang</button>
+  <button onclick="bukaModalHistori()">Lihat Histori Transaksi</button>
+
+  <!-- Modal Kelola Barang -->
+  <div id="modalKelolaBarang" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="tutupModalKelolaBarang()">&times;</span>
+      <h2>Kelola Barang</h2>
+      <input type="text" id="nama_barang" placeholder="Nama Barang">
+      <input type="number" id="harga_barang" placeholder="Harga Barang">
+      <button onclick="tambahBarang()">Tambah Barang</button>
+      <button onclick="hapusBarang()">Hapus Barang</button>
+      <button onclick="ubahBarang()">Ubah Barang</button>
     </div>
+  </div>
 
-    <div id="items_container">
-        <!-- Item akan ditambahkan secara dinamis di sini -->
+  <!-- Modal Histori Transaksi -->
+  <div id="modalHistoriTransaksi" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="tutupModalHistori()">&times;</span>
+      <h2>Histori Transaksi</h2>
+      <ul id="histori_list"></ul>
+      <p>Total Hari Ini: Rp <span id="total_histori">0</span></p>
+      <p>Total per Shift:</p>
+      <ul id="total_shift_list"></ul>
     </div>
+  </div>
 
-    <div id="total">
-        Total: Rp <span id="total_harga">0</span>
-    </div>
+  <script>
+    // Load data from localStorage on page load
+    const keranjang = loadKeranjangFromLocalStorage();
 
-    <div>
-        <label for="uang_diberikan">Uang Diberikan:</label>
-        <input type="number" id="uang_diberikan" min="0" onchange="hitungKembalian()">
-    </div>
+    // Data sementara untuk menyimpan item yang dibeli
+    const harga = {
+      es_teh: 3000,
+      pentol: 1000,
+      gooday: 5000,
+      batagor: 1000
+    };
 
-    <div id="kembalian">
-        Kembalian: Rp <span id="kembalian_harga">0</span>
-    </div>
+    let historiTransaksi = [];
+    let totalHistoriHariIni = 0;
+    let lastResetDate = new Date().toLocaleDateString();
+    let shiftTotals = {};
 
-    <button onclick="simpanTransaksi()">Simpan Transaksi</button>
-    <button onclick="bukaModalKelolaBarang()">Kelola Barang</button>
-    <button onclick="bukaModalHistori()">Lihat Histori Transaksi</button>
+    // Fungsi untuk menampilkan item
+    function tampilkanItem() {
+      const itemsContainer = document.getElementById('items_container');
+      itemsContainer.innerHTML = "";
 
-    <!-- Modal Kelola Barang -->
-    <div id="modalKelolaBarang" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="tutupModalKelolaBarang()">&times;</span>
-            <h2>Kelola Barang</h2>
-            <input type="text" id="nama_barang" placeholder="Nama Barang">
-            <input type="number" id="harga_barang" placeholder="Harga Barang">
-            <button onclick="tambahBarang()">Tambah Barang</button>
-            <button onclick="hapusBarang()">Hapus Barang</button>
-            <button onclick="ubahBarang()">Ubah Barang</button>
-        </div>
-    </div>
+      // Urutkan item berdasarkan frekuensi (dari yang tertinggi ke terendah)
+      const sortedItems = Object.keys(keranjang).sort((a, b) => keranjang[b].frekuensi - keranjang[a].frekuensi);
 
-    <!-- Modal Histori Transaksi -->
-    <div id="modalHistoriTransaksi" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="tutupModalHistori()">&times;</span>
-            <h2>Histori Transaksi</h2>
-            <ul id="histori_list"></ul>
-            <p>Total Hari Ini: Rp <span id="total_histori">0</span></p>
-            <p>Total per Shift:</p>
-            <ul id="total_shift_list"></ul>
-        </div>
-    </div>
+      sortedItems.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'item';
+        itemDiv.setAttribute('onclick', `tambahItem('${item}')`);
+        itemDiv.innerHTML = `<span>${keranjang[item].nama} - Rp ${keranjang[item].harga}</span><input type="number" id="${item}_qty" value="0" min="0" onchange="updateJumlah('${item}')">`;
+        itemsContainer.appendChild(itemDiv);
+      });
+    }
 
-    <script>
-        const harga = {
-            es_teh: 3000,
-            pentol: 1000,
-            gooday: 5000,
-            batagor: 1000
+    // Fungsi untuk menambah jumlah item
+    function tambahItem(item) {
+      if (!keranjang[item]) {
+        alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
+        return;
+      }
+
+      keranjang[item].jumlah += 1;
+      document.getElementById(`${item}_qty`).value = keranjang[item].jumlah;
+      hitungTotal();
+    }
+
+    // Fungsi untuk mengupdate jumlah item secara manual
+    function updateJumlah(item) {
+      if (!keranjang[item]) {
+        alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
+        return;
+      }
+
+      const qtyInput = document.getElementById(`${item}_qty`);
+      keranjang[item].jumlah = parseInt(qtyInput.value);
+      hitungTotal();
+    }
+
+    // Fungsi untuk menghitung total harga
+    function hitungTotal() {
+      let totalHarga = 0;
+      for (let item in keranjang) {
+        if (keranjang[item].harga === undefined) {
+          alert(`TERJADI KESALAHAN: Harga untuk ${keranjang[item].nama} tidak terdefinisi!`);
+          return;
+        }
+        totalHarga += keranjang[item].jumlah * keranjang[item].harga;
+      }
+
+      document.getElementById('total_harga').innerText = totalHarga;
+      hitungKembalian();
+    }
+
+    // Fungsi untuk menghitung kembalian
+    function hitungKembalian() {
+      const totalHarga = parseInt(document.getElementById('total_harga').innerText);
+      const uangDiberikan = parseInt(document.getElementById('uang_diberikan').value);
+
+      if (uangDiberikan >= totalHarga) {
+        const kembalian = uangDiberikan - totalHarga;
+        document.getElementById('kembalian_harga').innerText = kembalian;
+      } else {
+        document.getElementById('kembalian_harga').innerText = "Uang tidak cukup";
+      }
+    }
+
+    // Fungsi untuk menyimpan transaksi ke histori
+    function simpanTransaksi() {
+      const totalHarga = parseInt(document.getElementById('total_harga').innerText);
+      const uangDiberikan = parseInt(document.getElementById('uang_diberikan').value);
+      const namaShift = document.getElementById('nama_shift').value;
+
+      if (uangDiberikan < totalHarga) {
+        alert("TERJADI KESALAHAN: Uang tidak cukup!");
+        return;
+      }
+
+      if (!namaShift) {
+        alert("TERJADI KESALAHAN: Masukkan nama shift!");
+        return;
+      }
+
+      // Cek apakah tanggal sudah berubah
+      const currentDate = new Date().toLocaleDateString();
+      if (currentDate !== lastResetDate) {
+        resetHistori();
+        lastResetDate = currentDate;
+      }
+
+      // Simpan detail transaksi
+      const detailTransaksi = [];
+      for (let item in keranjang) {
+        if (keranjang[item].jumlah > 0) {
+          if (keranjang[item].harga === undefined) {
+            alert(`TERJADI KESALAHAN: Harga untuk ${keranjang[item].nama} tidak terdefinisi!`);
+            return;
+          }
+          detailTransaksi.push({ nama: keranjang[item].nama, jumlah: keranjang[item].jumlah, total: keranjang[item].jumlah * keranjang[item].harga });
+
+          // Update frekuensi pembelian item
+          keranjang[item].frekuensi += keranjang[item].jumlah;
+        }
+      }
+
+      // Simpan transaksi ke histori
+      historiTransaksi.push({ totalHarga, detailTransaksi, namaShift });
+      totalHistoriHariIni += totalHarga;
+
+      // Update total per shift
+      if (!shiftTotals[namaShift]) {
+        shiftTotals[namaShift] = 0;
+      }
+      shiftTotals[namaShift] += totalHarga;
+
+      // Update tampilan histori
+      updateHistori();
+
+      // Reset keranjang dan input setelah transaksi
+      for (let item in keranjang) {
+        keranjang[item].jumlah = 0;
+        document.getElementById(`${item}_qty`).value = 0;
+      }
+
+      document.getElementById('uang_diberikan').value = 0;
+      document.getElementById('total_harga').innerText = 0;
+      document.getElementById('kembalian_harga').innerText = 0;
+
+      // Tampilkan ulang item setelah frekuensi diupdate
+      tampilkanItem();
+
+      // Simpan keranjang ke localStorage
+      saveKeranjangToLocalStorage();
+    }
+
+    // Fungsi untuk mengupdate tampilan histori
+    function updateHistori() {
+      const historiList = document.getElementById('histori_list');
+      const totalShiftList = document.getElementById('total_shift_list');
+
+      historiList.innerHTML = "";
+      totalShiftList.innerHTML = "";
+
+      historiTransaksi.forEach((transaksi, index) => {
+        const li = document.createElement('li');
+        let detail = `Transaksi ${index + 1}:<br>`;
+        transaksi.detailTransaksi.forEach(item => {
+          detail += `${item.nama} (${item.jumlah})<br>`;
+        });
+        detail += `Total: Rp ${transaksi.totalHarga}`;
+        li.innerHTML = detail;
+        historiList.appendChild(li);
+      });
+
+      for (let shift in shiftTotals) {
+        const li = document.createElement('li');
+        li.innerText = `Shift ${shift}: Rp ${shiftTotals[shift]}`;
+        totalShiftList.appendChild(li);
+      }
+
+      document.getElementById('total_histori').innerText = totalHistoriHariIni;
+    }
+
+    // Fungsi untuk mereset histori saat pergantian tanggal
+    function resetHistori() {
+      historiTransaksi = [];
+      totalHistoriHariIni = 0;
+      shiftTotals = {};
+      updateHistori();
+    }
+
+    // Fungsi untuk menambah barang baru
+    function tambahBarang() {
+      const namaBarang = document.getElementById('nama_barang').value;
+      const hargaBarang = parseInt(document.getElementById('harga_barang').value);
+
+      if (!namaBarang || isNaN(hargaBarang)) {
+        alert("TERJADI KESALAHAN: Masukkan nama dan harga barang yang valid!");
+        return;
+      }
+
+      const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
+      keranjang[idBarang] = { nama: namaBarang, harga: hargaBarang, jumlah: 0, frekuensi: 0 };
+      harga[idBarang] = hargaBarang;
+
+      tampilkanItem();
+      document.getElementById('nama_barang').value = "";
+      document.getElementById('harga_barang').value = "";
+      tutupModalKelolaBarang();
+
+      // Simpan keranjang ke localStorage
+      saveKeranjangToLocalStorage();
+    }
+
+    // Fungsi untuk menghapus barang
+    function hapusBarang() {
+      const namaBarang = document.getElementById('nama_barang').value;
+      const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
+
+      if (!keranjang[idBarang]) {
+        alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
+        return;
+      }
+
+      delete keranjang[idBarang];
+      delete harga[idBarang];
+
+      tampilkanItem();
+      document.getElementById('nama_barang').value = "";
+      document.getElementById('harga_barang').value = "";
+      tutupModalKelolaBarang();
+
+      // Simpan keranjang ke localStorage
+      saveKeranjangToLocalStorage();
+    }
+
+    // Fungsi untuk mengubah barang
+    function ubahBarang() {
+      const namaBarang = document.getElementById('nama_barang').value;
+      const hargaBarang = parseInt(document.getElementById('harga_barang').value);
+      const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
+
+      if (!keranjang[idBarang]) {
+        alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
+        return;
+      }
+
+      keranjang[idBarang].harga = hargaBarang;
+      harga[idBarang] = hargaBarang;
+
+      tampilkanItem();
+      document.getElementById('nama_barang').value = "";
+      document.getElementById('harga_barang').value = "";
+      tutupModalKelolaBarang();
+
+      // Simpan keranjang ke localStorage
+      saveKeranjangToLocalStorage();
+    }
+
+    // Fungsi untuk membuka modal kelola barang
+    function bukaModalKelolaBarang() {
+      document.getElementById('modalKelolaBarang').style.display = 'block';
+    }
+
+    // Fungsi untuk menutup modal kelola barang
+    function tutupModalKelolaBarang() {
+      document.getElementById('modalKelolaBarang').style.display = 'none';
+    }
+
+    // Fungsi untuk membuka modal histori transaksi
+    function bukaModalHistori() {
+      updateHistori(); // Perbarui histori sebelum menampilkan modal
+      document.getElementById('modalHistoriTransaksi').style.display = 'block';
+    }
+
+    // Fungsi untuk menutup modal histori transaksi
+    function tutupModalHistori() {
+      document.getElementById('modalHistoriTransaksi').style.display = 'none';
+    }
+
+    // Fungsi untuk menyimpan keranjang ke localStorage
+    function saveKeranjangToLocalStorage() {
+      localStorage.setItem("keranjang", JSON.stringify(keranjang));
+    }
+
+    // Fungsi untuk memuat keranjang dari localStorage
+    function loadKeranjangFromLocalStorage() {
+      const savedKeranjang = localStorage.getItem("keranjang");
+      if (savedKeranjang) {
+        return JSON.parse(savedKeranjang);
+      } else {
+        // Inisialisasi keranjang jika belum ada data
+        return {
+          es_teh: { nama: "Es Teh", harga: 3000, jumlah: 0, frekuensi: 0 },
+          pentol: { nama: "Pentol", harga: 1000, jumlah: 0, frekuensi: 0 },
+          gooday: { nama: "Gooday", harga: 5000, jumlah: 0, frekuensi: 0 },
+          batagor: { nama: "Batagor", harga: 1000, jumlah: 0, frekuensi: 0 }
         };
+      }
+    }
 
-        let historiTransaksi = [];
-        let totalHistoriHariIni = 0;
-        let lastResetDate = new Date().toLocaleDateString();
-        let shiftTotals = {};
-
-        // Data sementara untuk menyimpan item yang dibeli
-        let keranjang = {
-            es_teh: { nama: "Es Teh", harga: 3000, jumlah: 0, frekuensi: 0 },
-            pentol: { nama: "Pentol", harga: 1000, jumlah: 0, frekuensi: 0 },
-            gooday: { nama: "Gooday", harga: 5000, jumlah: 0, frekuensi: 0 },
-            batagor: { nama: "Batagor", harga: 1000, jumlah: 0, frekuensi: 0 }
-        };
-
-        // Fungsi untuk menampilkan item
-        function tampilkanItem() {
-            const itemsContainer = document.getElementById('items_container');
-            itemsContainer.innerHTML = "";
-
-            // Urutkan item berdasarkan frekuensi (dari yang tertinggi ke terendah)
-            const sortedItems = Object.keys(keranjang).sort((a, b) => keranjang[b].frekuensi - keranjang[a].frekuensi);
-
-            sortedItems.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'item';
-                itemDiv.setAttribute('onclick', `tambahItem('${item}')`);
-                itemDiv.innerHTML = `
-                    <span>${keranjang[item].nama}</span> - Rp ${keranjang[item].harga}
-                    <input type="number" id="${item}_qty" value="0" min="0" onchange="updateJumlah('${item}')">
-                `;
-                itemsContainer.appendChild(itemDiv);
-            });
-        }
-
-        // Fungsi untuk menambah jumlah item
-        function tambahItem(item) {
-            if (!keranjang[item]) {
-                alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
-                return;
-            }
-            keranjang[item].jumlah += 1;
-            document.getElementById(`${item}_qty`).value = keranjang[item].jumlah;
-            hitungTotal();
-        }
-
-        // Fungsi untuk mengupdate jumlah item secara manual
-        function updateJumlah(item) {
-            if (!keranjang[item]) {
-                alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
-                return;
-            }
-            const qtyInput = document.getElementById(`${item}_qty`);
-            keranjang[item].jumlah = parseInt(qtyInput.value);
-            hitungTotal();
-        }
-
-        // Fungsi untuk menghitung total harga
-        function hitungTotal() {
-            let totalHarga = 0;
-            for (let item in keranjang) {
-                if (keranjang[item].harga === undefined) {
-                    alert(`TERJADI KESALAHAN: Harga untuk ${keranjang[item].nama} tidak terdefinisi!`);
-                    return;
-                }
-                totalHarga += keranjang[item].jumlah * keranjang[item].harga;
-            }
-            document.getElementById('total_harga').innerText = totalHarga;
-            hitungKembalian();
-        }
-
-        // Fungsi untuk menghitung kembalian
-        function hitungKembalian() {
-            const totalHarga = parseInt(document.getElementById('total_harga').innerText);
-            const uangDiberikan = parseInt(document.getElementById('uang_diberikan').value);
-
-            if (uangDiberikan >= totalHarga) {
-                const kembalian = uangDiberikan - totalHarga;
-                document.getElementById('kembalian_harga').innerText = kembalian;
-            } else {
-                document.getElementById('kembalian_harga').innerText = "Uang tidak cukup";
-            }
-        }
-
-        // Fungsi untuk menyimpan transaksi ke histori
-        function simpanTransaksi() {
-            const totalHarga = parseInt(document.getElementById('total_harga').innerText);
-            const uangDiberikan = parseInt(document.getElementById('uang_diberikan').value);
-            const namaShift = document.getElementById('nama_shift').value;
-
-            if (uangDiberikan < totalHarga) {
-                alert("TERJADI KESALAHAN: Uang tidak cukup!");
-                return;
-            }
-
-            if (!namaShift) {
-                alert("TERJADI KESALAHAN: Masukkan nama shift!");
-                return;
-            }
-
-            // Cek apakah tanggal sudah berubah
-            const currentDate = new Date().toLocaleDateString();
-            if (currentDate !== lastResetDate) {
-                resetHistori();
-                lastResetDate = currentDate;
-            }
-
-            // Simpan detail transaksi
-            const detailTransaksi = [];
-            for (let item in keranjang) {
-                if (keranjang[item].jumlah > 0) {
-                    if (keranjang[item].harga === undefined) {
-                        alert(`TERJADI KESALAHAN: Harga untuk ${keranjang[item].nama} tidak terdefinisi!`);
-                        return;
-                    }
-                    detailTransaksi.push({
-                        nama: keranjang[item].nama,
-                        jumlah: keranjang[item].jumlah,
-                        total: keranjang[item].jumlah * keranjang[item].harga
-                    });
-
-                    // Update frekuensi pembelian item
-                    keranjang[item].frekuensi += keranjang[item].jumlah;
-                }
-            }
-
-            // Simpan transaksi ke histori
-            historiTransaksi.push({ totalHarga, detailTransaksi, namaShift });
-            totalHistoriHariIni += totalHarga;
-
-            // Update total per shift
-            if (!shiftTotals[namaShift]) {
-                shiftTotals[namaShift] = 0;
-            }
-            shiftTotals[namaShift] += totalHarga;
-
-            // Update tampilan histori
-            updateHistori();
-
-            // Reset keranjang dan input setelah transaksi
-            for (let item in keranjang) {
-                keranjang[item].jumlah = 0;
-                document.getElementById(`${item}_qty`).value = 0;
-            }
-            document.getElementById('uang_diberikan').value = 0;
-            document.getElementById('total_harga').innerText = 0;
-            document.getElementById('kembalian_harga').innerText = 0;
-
-            // Tampilkan ulang item setelah frekuensi diupdate
-            tampilkanItem();
-        }
-
-        // Fungsi untuk mengupdate tampilan histori
-        function updateHistori() {
-            const historiList = document.getElementById('histori_list');
-            const totalShiftList = document.getElementById('total_shift_list');
-            historiList.innerHTML = "";
-            totalShiftList.innerHTML = "";
-
-            historiTransaksi.forEach((transaksi, index) => {
-                const li = document.createElement('li');
-                let detail = `Transaksi ${index + 1}:<br>`;
-                transaksi.detailTransaksi.forEach(item => {
-                    detail += `${item.nama} (${item.jumlah})<br>`;
-                });
-                detail += `Total: Rp ${transaksi.totalHarga}`;
-                li.innerHTML = detail;
-                historiList.appendChild(li);
-            });
-
-            for (let shift in shiftTotals) {
-                const li = document.createElement('li');
-                li.innerText = `Shift ${shift}: Rp ${shiftTotals[shift]}`;
-                totalShiftList.appendChild(li);
-            }
-
-            document.getElementById('total_histori').innerText = totalHistoriHariIni;
-        }
-
-        // Fungsi untuk mereset histori saat pergantian tanggal
-        function resetHistori() {
-            historiTransaksi = [];
-            totalHistoriHariIni = 0;
-            shiftTotals = {};
-            updateHistori();
-        }
-
-        // Fungsi untuk menambah barang baru
-        function tambahBarang() {
-            const namaBarang = document.getElementById('nama_barang').value;
-            const hargaBarang = parseInt(document.getElementById('harga_barang').value);
-
-            if (!namaBarang || isNaN(hargaBarang)) {
-                alert("TERJADI KESALAHAN: Masukkan nama dan harga barang yang valid!");
-                return;
-            }
-
-            const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
-            keranjang[idBarang] = { nama: namaBarang, harga: hargaBarang, jumlah: 0, frekuensi: 0 };
-            harga[idBarang] = hargaBarang;
-
-            tampilkanItem();
-            document.getElementById('nama_barang').value = "";
-            document.getElementById('harga_barang').value = "";
-            tutupModalKelolaBarang();
-        }
-
-        // Fungsi untuk menghapus barang
-        function hapusBarang() {
-            const namaBarang = document.getElementById('nama_barang').value;
-            const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
-
-            if (!keranjang[idBarang]) {
-                alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
-                return;
-            }
-
-            delete keranjang[idBarang];
-            delete harga[idBarang];
-
-            tampilkanItem();
-            document.getElementById('nama_barang').value = "";
-            document.getElementById('harga_barang').value = "";
-            tutupModalKelolaBarang();
-        }
-
-        // Fungsi untuk mengubah barang
-        function ubahBarang() {
-            const namaBarang = document.getElementById('nama_barang').value;
-            const hargaBarang = parseInt(document.getElementById('harga_barang').value);
-            const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
-
-            if (!keranjang[idBarang]) {
-                alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
-                return;
-            }
-
-            keranjang[idBarang].harga = hargaBarang;
-            harga[idBarang] = hargaBarang;
-
-            tampilkanItem();
-            document.getElementById('nama_barang').value = "";
-            document.getElementById('harga_barang').value = "";
-            tutupModalKelolaBarang();
-        }
-
-        // Fungsi untuk membuka modal kelola barang
-        function bukaModalKelolaBarang() {
-            document.getElementById('modalKelolaBarang').style.display = 'block';
-        }
-
-        // Fungsi untuk menutup modal kelola barang
-        function tutupModalKelolaBarang() {
-            document.getElementById('modalKelolaBarang').style.display = 'none';
-        }
-
-        // Fungsi untuk membuka modal histori transaksi
-        function bukaModalHistori() {
-            updateHistori(); // Perbarui histori sebelum menampilkan modal
-            document.getElementById('modalHistoriTransaksi').style.display = 'block';
-        }
-
-        // Fungsi untuk menutup modal histori transaksi
-        function tutupModalHistori() {
-            document.getElementById('modalHistoriTransaksi').style.display = 'none';
-        }
-
-        // Tampilkan item saat pertama kali memuat halaman
-        tampilkanItem();
-    </script>
-
+    // Tampilkan item saat pertama kali memuat halaman
+    tampilkanItem();
+  </script>
 </body>
 </html>
