@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kasir Sederhana</title>
+  <title>Kasir</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -123,10 +123,10 @@
   </style>
 </head>
 <body>
-  <h1>Kasir Sederhana</h1>
+  <h1>Kasir UMKM</h1>
 
   <div>
-    <label for="nama_shift">Nama Shift:</label>
+    <label for="nama_shift">Nama Kasir:</label>
     <input type="text" id="nama_shift" placeholder="Masukkan nama shift">
   </div>
 
@@ -177,17 +177,8 @@
   </div>
 
   <script>
-    // Load data from localStorage on page load
-    const keranjang = loadKeranjangFromLocalStorage();
-
-    // Data sementara untuk menyimpan item yang dibeli
-    const harga = {
-      es_teh: 3000,
-      pentol: 1000,
-      gooday: 5000,
-      batagor: 1000
-    };
-
+    // Inisialisasi variabel
+    let keranjang = loadKeranjangFromLocalStorage();
     let historiTransaksi = [];
     let totalHistoriHariIni = 0;
     let lastResetDate = new Date().toLocaleDateString();
@@ -368,25 +359,32 @@
 
     // Fungsi untuk menambah barang baru
     function tambahBarang() {
-      const namaBarang = document.getElementById('nama_barang').value;
-      const hargaBarang = parseInt(document.getElementById('harga_barang').value);
+      try {
+        const namaBarang = document.getElementById('nama_barang').value.trim();
+        const hargaBarang = parseInt(document.getElementById('harga_barang').value);
 
-      if (!namaBarang || isNaN(hargaBarang)) {
-        alert("TERJADI KESALAHAN: Masukkan nama dan harga barang yang valid!");
-        return;
+        if (!namaBarang || isNaN(hargaBarang)) {
+          throw new Error("Masukkan nama dan harga barang yang valid!");
+        }
+
+        if (!keranjang) {
+          keranjang = {}; // Inisialisasi keranjang jika belum ada
+        }
+
+        const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
+        keranjang[idBarang] = { nama: namaBarang, harga: hargaBarang, jumlah: 0, frekuensi: 0 };
+
+        // Tampilkan item setelah ditambahkan
+        tampilkanItem();
+        document.getElementById('nama_barang').value = "";
+        document.getElementById('harga_barang').value = "";
+        tutupModalKelolaBarang();
+
+        // Simpan keranjang ke localStorage
+        saveKeranjangToLocalStorage();
+      } catch (error) {
+        alert(error.message);
       }
-
-      const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
-      keranjang[idBarang] = { nama: namaBarang, harga: hargaBarang, jumlah: 0, frekuensi: 0 };
-      harga[idBarang] = hargaBarang;
-
-      tampilkanItem();
-      document.getElementById('nama_barang').value = "";
-      document.getElementById('harga_barang').value = "";
-      tutupModalKelolaBarang();
-
-      // Simpan keranjang ke localStorage
-      saveKeranjangToLocalStorage();
     }
 
     // Fungsi untuk menghapus barang
@@ -394,13 +392,12 @@
       const namaBarang = document.getElementById('nama_barang').value;
       const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
 
-      if (!keranjang[idBarang]) {
+      if (!keranjang || !keranjang[idBarang]) {
         alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
         return;
       }
 
       delete keranjang[idBarang];
-      delete harga[idBarang];
 
       tampilkanItem();
       document.getElementById('nama_barang').value = "";
@@ -417,13 +414,12 @@
       const hargaBarang = parseInt(document.getElementById('harga_barang').value);
       const idBarang = namaBarang.toLowerCase().replace(/ /g, '_');
 
-      if (!keranjang[idBarang]) {
+      if (!keranjang || !keranjang[idBarang]) {
         alert("TERJADI KESALAHAN: Barang tidak ditemukan!");
         return;
       }
 
       keranjang[idBarang].harga = hargaBarang;
-      harga[idBarang] = hargaBarang;
 
       tampilkanItem();
       document.getElementById('nama_barang').value = "";
@@ -467,12 +463,7 @@
         return JSON.parse(savedKeranjang);
       } else {
         // Inisialisasi keranjang jika belum ada data
-        return {
-          es_teh: { nama: "Es Teh", harga: 3000, jumlah: 0, frekuensi: 0 },
-          pentol: { nama: "Pentol", harga: 1000, jumlah: 0, frekuensi: 0 },
-          gooday: { nama: "Gooday", harga: 5000, jumlah: 0, frekuensi: 0 },
-          batagor: { nama: "Batagor", harga: 1000, jumlah: 0, frekuensi: 0 }
-        };
+        return {};
       }
     }
 
